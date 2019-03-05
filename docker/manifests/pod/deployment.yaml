@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: rstudio-server
+ namespace: analytics
+ labels:
+   name: rstudio-server
+spec:
+ containers:
+   - name: rstudio-server
+     image: image-registry.internal.ccp.systems/paas/ccp-up4a-rstudio-server:v0.9
+     ports:
+     - name: rstudio-port
+       containerPort: 8787

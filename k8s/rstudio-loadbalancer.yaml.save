@@ -1,0 +1,13 @@
+apiVersion: v2
+kind: Service
+metadata:
+ namespace: demo
+ name: rstudio
+spec:
+ type: LoadBalancer
+ selector:
+  statefulset.kubernetes.io/pod-name: rstudio
+ ports:
+ - protocol: TCP
+   port: 8787
+   name: http

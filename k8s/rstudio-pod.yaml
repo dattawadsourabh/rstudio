@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: rstudio2
+ labels:
+   name: rstudio2
+spec:
+ containers:
+   - name: rstudio2
+     image: image-registry.internal.ccp.systems/paas/ccp-up4a-rstudio_new:v0.9
+#     command: [ "/bin/bash", "-c", "--" ]
+ #    args: [ "while true; do sleep 30; done;" ]
+     ports:
+     - name: rstudio-port
+       containerPort: 8787

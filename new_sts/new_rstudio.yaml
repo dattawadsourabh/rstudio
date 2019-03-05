@@ -1,0 +1,74 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  namespace: helm-analytics
+  name: rstudio
+spec:
+  selector:
+    matchLabels:
+      app: rstudio
+  serviceName: rstudio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rstudio
+    spec:
+        containers:
+        - image: "image-registry.internal.ccp.systems/paas/ccp-up4a-rstudio-server:v1.0"
+          name: rstudio
+          ports:
+          - containerPort: 8787
+            name: http
+          readinessProbe:
+            tcpSocket:
+              port: 8787
+            timeoutSeconds: 10
+            periodSeconds: 10
+            initialDelaySeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8787
+            timeoutSeconds: 10
+            periodSeconds: 10
+            initialDelaySeconds: 45
+          volumeMounts:
+            - name: rstudio
+              mountPath: /data/rstudio
+          resources:
+            requests:
+             cpu: 2000m
+             memory: "8192M"
+        securityContext:
+          runAsUser: 1000
+          fsGroup: 1000
+#      volumes:
+#      - name: rstudio
+#        persistentVolumeClaim:
+#          claimName: session-rstudio
+
+  volumeClaimTemplates:
+  - metadata:
+      name: rstudio
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+ namespace: helm-analytics
+ name: rstudio-lb
+spec:
+ type: LoadBalancer
+ selector:
+  app: rstudio
+ ports:
+ - protocol: TCP
+   port: 8787
+   name: http

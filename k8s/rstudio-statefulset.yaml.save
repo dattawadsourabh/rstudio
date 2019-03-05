@@ -1,0 +1,55 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  namespace: demo
+  name: rstudio
+spec:
+  selector:
+    matchLabels:
+      app: rstudio
+  serviceName: rstudio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rstudio
+    spec:
+      #securityContext:
+      #    runAsUser: 1000
+      #    fsGroup: 1000
+      #    runAsNonRoot: true
+      containers:
+      #- image: "image-registry.internal.ccp.systems/paas/ccp-up4a-spark:v0.9"
+      - image: "eu.gcr.io/ccp-testenv/rstudio"
+        command: ["/bin/sh","-c"]
+        args: ["/sbin/my_init"]
+        imagePullPolicy: Always
+        name: rstudio
+        resources:
+          requests:
+            memory: "1024Mi"
+            cpu: "200m"
+        #readinessProbe:
+        #  tcpSocket:
+        #    port: 7077
+        #  timeoutSeconds: 5
+        #  periodSeconds: 5
+        #  initialDelaySeconds: 30
+        #livenessProbe:
+        #  tcpSocket:
+        #     port: 7077
+        # timeoutSeconds: 5
+        #  periodSeconds: 5
+        #  initialDelaySeconds: 60
+        ports:
+        - containerPort: 8787
+          name: http
+        #volumeMounts:
+        #    - name: rstudio-master
+        #      mountPath: /opt/spark/boot-spark-master.sh
+        #      subPath: boot-spark-master.sh
+      #volumes:
+      #- name: boot-spark-master
+      #  configMap:
+      #    name: boot-spark-master
+

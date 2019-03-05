@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  namespace: demo
+  name: rstudio
+spec:
+  selector:
+    matchLabels:
+      app: rstudio
+  serviceName: rstudio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rstudio
+    spec:
+        containers:
+        - image: "eu.gcr.io/ccp-testenv/paas/rstudio-server"
+          name: rstudio
+          ports:
+          - containerPort: 8787
+            name: http
+          readinessProbe:
+            tcpSocket:
+              port: 8787
+            timeoutSeconds: 10
+            periodSeconds: 10
+            initialDelaySeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: 8787
+            timeoutSeconds: 10
+            periodSeconds: 10
+            initialDelaySeconds: 45
+---
+apiVersion: v1
+kind: Service
+metadata:
+ namespace: demo
+ name: rstudio-lb
+spec:
+ type: LoadBalancer
+ selector:
+  app: rstudio
+ ports:
+ - protocol: TCP
+   port: 8787
+   name: http
